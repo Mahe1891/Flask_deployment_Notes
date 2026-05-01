@@ -2,8 +2,7 @@ from flask import Flask, render_template, request, redirect, session, flash
 import sqlite3
 import random
 from werkzeug.security import generate_password_hash, check_password_hash
-import smtplib
-from email.mime.text import MIMEText
+
 
 app = Flask(__name__)
 app.secret_key = "secret123"
@@ -14,16 +13,10 @@ APP_PASSWORD = "gteypxpdjsclozse"
 
 
 def send_email(to_email, subject, body):
-    msg = MIMEText(body)
-    msg['Subject'] = subject
-    msg['From'] = SENDER_EMAIL
-    msg['To'] = to_email
-
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(SENDER_EMAIL, APP_PASSWORD)
-    server.send_message(msg)
-    server.quit()
+    print("EMAIL SENT")
+    print("TO:", to_email)
+    print("SUBJECT:", subject)
+    print("BODY:", body)
 
 
 # ---------------- DB CONNECTION (SQLite) ----------------
