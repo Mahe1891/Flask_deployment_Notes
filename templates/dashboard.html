@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - Notes App</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+/* BODY */
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* NAVBAR */
+.custom-navbar {
+    background: #0f172a;
+    padding: 12px 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    color: white !important;
+}
+
+/* NAV LINKS */
+.nav-links a {
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+.nav-links a:hover {
+    color: white;
+    background: rgba(255,255,255,0.08);
+}
+
+.nav-links .logout {
+    color: #f87171;
+}
+
+/* SEARCH */
+.search-wrapper {
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+/* CARD */
+.card-note {
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 15px;
+}
+
+/* WRAPPER */
+.wrapper {
+    flex: 1 0 auto;
+    min-height: calc(100vh - 200px);  /* ✅ pushes footer down */
+}
+
+/* FLASH */
+.flash-container {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+}
+
+.flash-box {
+    width: 320px;
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.flash-success {
+    background: #ecfdf5;
+    color: #065f46;
+}
+
+.flash-danger {
+    background: #fef2f2;
+    color: #7f1d1d;
+}
+
+/* ===== MODERN CLEAN FOOTER ===== */
+.modern-footer {
+    background: linear-gradient(180deg, #0b1020, #020617);
+    color: #cbd5e1;
+    padding: 60px 20px 20px;
+    margin-top: auto;   /* ✅ IMPORTANT */
+}
+
+.modern-footer h6 {
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.modern-footer a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.modern-footer a:hover {
+    color: #6366f1;
+}
+
+/* SOCIAL */
+.social-icons span {
+    display: inline-block;
+    margin-right: 10px;
+    background: #111827;
+    padding: 8px 10px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* BOTTOM */
+.footer-bottom {
+    border-top: 1px solid #1e293b;
+    margin-top: 30px;
+    padding-top: 15px;
+    text-align: center;
+    font-size: 13px;
+    color: #64748b;
+}
+
+
+/* MOBILE */
+@media (max-width:768px){
+    .nav-links {
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+        margin-top: 10px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar custom-navbar navbar-expand-md">
+<div class="container-fluid">
+
+<a class="navbar-brand">
+<img src="https://static.vecteezy.com/system/resources/previews/029/722/382/original/notes-icon-in-trendy-flat-style-isolated-on-white-background-notes-silhouette-symbol-for-your-website-design-logo-app-ui-illustration-eps10-free-vector.jpg" class="logo">
+Notes Management
+</a>
+
+<!-- ✅ TOGGLER FIX -->
+<button class="navbar-toggler bg-light" type="button"
+data-bs-toggle="collapse" data-bs-target="#menu">
+☰
+</button>
+
+<!-- ✅ COLLAPSE -->
+<div class="collapse navbar-collapse" id="menu">
+<div class="nav-links ms-auto d-flex align-items-center gap-4">
+
+<a href="/dashboard"><span>🏠</span> Dashboard</a>
+<a href="/add_note"><span>➕</span> Add Note</a>
+<a href="/logout" class="logout"><span>🚪</span> Logout</a>
+
+</div>
+</div>
+
+</div>
+</nav>
+
+<!-- ✅ FLASH FIX -->
+<div class="flash-container">
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, msg in messages %}
+<div class="flash-box flash-{{category}}">
+{{ msg }}
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+</div>
+
+<!-- SEARCH -->
+<div class="search-wrapper">
+<form method="GET" action="/dashboard">
+<div class="input-group">
+<input type="search" name="search" class="form-control"
+placeholder="Search notes..."
+value="{{ request.args.get('search','') }}">
+<button class="btn btn-dark">Search</button>
+</div>
+</form>
+</div>
+
+<!-- CONTENT -->
+<div class="wrapper container">
+<div class="row">
+
+{% if notes %}
+
+    {% for note in notes %}
+    <div class="col-md-4 mb-4">
+        <div class="card-note">
+            <h5>{{ note[1] }}</h5>
+            <p>{{ note[2][:100] }}...</p>
+
+            <div class="d-flex gap-2">
+                <a href="/view_note/{{ note[0] }}" class="btn btn-primary btn-sm">View</a>
+                <a href="/edit_note/{{ note[0] }}" class="btn btn-warning btn-sm">Edit</a>
+
+                <form action="/delete_note/{{ note[0] }}" method="POST">
+                    <button class="btn btn-danger btn-sm">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+{% else %}
+
+<div class="col-12 text-center mt-5">
+
+    <!-- ICON -->
+    <div style="font-size:60px;">📝</div>
+
+    <!-- TEXT -->
+    <h4 class="mt-3">No Notes Available</h4>
+    <p class="text-muted">Start by creating your first note</p>
+
+    <!-- BUTTON -->
+    <a href="/add_note" class="btn btn-dark mt-2">
+        ➕ Add Note
+    </a>
+
+</div>
+
+{% endif %}
+
+</div>
+</div>
+
+<!-- CLEAN MODERN FOOTER -->
+<div class="modern-footer">
+    <div class="container">
+
+        <div class="row gy-4 justify-content-between">
+
+            <!-- PRODUCT -->
+            <div class="col-md-3">
+                <h6>Product</h6>
+                <a href="#">Features</a>
+                <a href="#">Pricing</a>
+                <a href="#">Security</a>
+                <a href="#">Integrations</a>
+            </div>
+
+            <!-- RESOURCES -->
+            <div class="col-md-3">
+                <h6>Resources</h6>
+                <a href="#">Documentation</a>
+                <a href="#">Help Center</a>
+                <a href="#">Blog</a>
+                <a href="#">Community</a>
+            </div>
+
+            <!-- SOCIAL -->
+            <div class="col-md-3">
+                <h6>Follow Us</h6>
+                <div class="social-icons mt-3">
+                    <span>𝕏</span>
+                    <span>🐱</span>
+                    <span>💬</span>
+                    <span>in</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            © 2026 All right Resrved by Mahendra
+        </div>
+
+    </div>
+</div>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ✅ FLASH AUTO REMOVE -->
+<script>
+setTimeout(() => {
+document.querySelectorAll('.flash-box').forEach(el => {
+el.style.opacity = "0";
+setTimeout(() => el.remove(), 300);
+});
+}, 2500);
+</script>
+
+</body>
+</html>

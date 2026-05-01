@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>View Note - Notes App</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+/* BODY */
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    font-family: 'Segoe UI', sans-serif;
+}
+/* FIX NAV SPACING LIKE DASHBOARD */
+.navbar-nav {
+    gap: 20px;
+    align-items: center;
+}
+
+/* NAVBAR */
+.custom-navbar {
+    background: #0f172a;
+    padding: 12px 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    color: white !important;
+}
+
+/* NAV LINKS (same as dashboard) */
+.navbar-nav .nav-link {
+    color: #cbd5e1 !important;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 6px;
+}
+
+.navbar-nav .nav-link:hover {
+    color: white !important;
+    background: rgba(255,255,255,0.08);
+}
+
+.navbar-nav .nav-link.logout {
+    color: #f87171 !important;
+}
+
+/* WRAPPER */
+.wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* CARD */
+.note-card {
+    max-width: 500px;
+    width: 100%;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+}
+
+/* TEXT */
+.note-text {
+    white-space: pre-wrap;
+    margin-top: 15px;
+}
+
+/* FLASH */
+.flash-box {
+    width: 350px;
+    margin: 15px auto;
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.flash-success {
+    background: #ecfdf5;
+    color: #065f46;
+}
+
+.flash-danger {
+    background: #fef2f2;
+    color: #7f1d1d;
+}
+
+/* ===== FOOTER ===== */
+.modern-footer {
+    background: linear-gradient(180deg, #0b1020, #020617);
+    color: #cbd5e1;
+    padding: 60px 20px 20px;
+    margin-top: 80px;
+}
+
+.modern-footer h6 {
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.modern-footer a {
+    display: block;
+    color: #94a3b8;
+    text-decoration: none;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+
+.modern-footer a:hover {
+    color: #6366f1;
+}
+
+.social-icons span {
+    display: inline-block;
+    margin-right: 10px;
+    background: #111827;
+    padding: 8px 10px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.footer-bottom {
+    border-top: 1px solid #1e293b;
+    margin-top: 30px;
+    padding-top: 15px;
+    text-align: center;
+    font-size: 13px;
+    color: #64748b;
+}
+.modern-footer {
+    margin-top: 160px;  /* 🔥 increase space */
+}
+/* FIX MOBILE NAV ALIGNMENT */
+@media (max-width:768px){
+    .navbar-nav {
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<nav class="navbar custom-navbar navbar-expand-md">
+<div class="container-fluid">
+
+<a class="navbar-brand">
+<img src="https://static.vecteezy.com/system/resources/previews/029/722/382/original/notes-icon-in-trendy-flat-style-isolated-on-white-background-notes-silhouette-symbol-for-your-website-design-logo-app-ui-illustration-eps10-free-vector.jpg" class="logo">
+Notes Management
+</a>
+
+<button class="navbar-toggler bg-light" type="button"
+data-bs-toggle="collapse" data-bs-target="#menu">
+<span class="navbar-toggler-icon"></span>
+</button>
+
+<div class="collapse navbar-collapse" id="menu">
+<div class="navbar-nav ms-auto d-flex flex-column flex-md-row gap-3">
+
+<a class="nav-link" href="/dashboard">🏠 Dashboard</a>
+<a class="nav-link" href="/add_note">➕ Add Note</a>
+<a class="nav-link logout" href="/logout">🚪 Logout</a>
+
+</div>
+</div>
+
+</div>
+</nav>
+
+<!-- FLASH -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, msg in messages %}
+<div class="flash-box flash-{{category}}">
+{{ msg }}
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<!-- CONTENT -->
+<div class="wrapper">
+
+<div class="note-card">
+
+<h3 class="fw-bold">{{ note[1] }}</h3>
+
+<p class="note-text">{{ note[2] }}</p>
+
+<a href="/dashboard" class="btn btn-dark mt-3">Back</a>
+
+</div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="modern-footer">
+<div class="container">
+
+<div class="row gy-4 justify-content-between">
+
+<div class="col-md-3">
+<h6>Product</h6>
+<a href="#">Features</a>
+<a href="#">Pricing</a>
+<a href="#">Security</a>
+<a href="#">Integrations</a>
+</div>
+
+<div class="col-md-3">
+<h6>Resources</h6>
+<a href="#">Documentation</a>
+<a href="#">Help Center</a>
+<a href="#">Blog</a>
+<a href="#">Community</a>
+</div>
+
+<div class="col-md-3">
+<h6>Follow Us</h6>
+<div class="social-icons mt-3">
+<span>𝕏</span>
+<span>🐱</span>
+<span>💬</span>
+<span>in</span>
+</div>
+</div>
+
+</div>
+
+<div class="footer-bottom">
+© 2026 All right Reserved by Mahendra
+</div>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
